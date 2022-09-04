@@ -1,6 +1,7 @@
 import requests
 from dotenv import load_dotenv
 import os
+from time import sleep
 
 
 if __name__ == '__main__':
@@ -17,3 +18,6 @@ if __name__ == '__main__':
             print(response.json())
         except requests.exceptions.ReadTimeout:
             print('Обновлений нет')
+        except requests.exceptions.ConnectionError:
+            print('Потеряно интернет соединение...')
+            sleep(10)
