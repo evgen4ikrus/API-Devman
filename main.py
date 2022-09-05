@@ -11,9 +11,9 @@ def prepare_message(attempt):
         attempt_result = 'К сожалению, в работе нашлись ошибки.'
     else:
         attempt_result = 'Преподавателю все понравилось, можно приступать к следующему уроку.'
-    lesson_url =  attempt['lesson_url']
-    message = f'У вас проверили работу "{lesson_title}".\n{attempt_result} {lesson_url}'
-    return message 
+    lesson_url = attempt['lesson_url']
+    message = f'У вас проверили работу "{lesson_title}".\n\n{attempt_result}\n{lesson_url}'
+    return message
 
 
 if __name__ == '__main__':
@@ -30,34 +30,34 @@ if __name__ == '__main__':
     }
     response = requests.get(url, headers=headers)
     response.raise_for_status()
-    new_checks = response.json()
+    query_result = response.json()
 
-    if new_checks['status'] == 'timeout':
-        timestamp = new_checks['timestamp_to_request']
+    if query_result['status'] == 'timeout':
+        timestamp = query_result['timestamp_to_request']
     else:
-        new_attempts = new_checks['new_attempts']
+        new_attempts = query_result['new_attempts']
         for attempt in new_attempts:
             message = prepare_message(attempt)
             bot.send_message(chat_id=telegram_chat_id, text=message)
-        timestamp = new_checks['last_attempt_timestamp']
+        timestamp = query_result['last_attempt_timestamp']
 
     while True:
 
         try:
             params = {'timestamp': timestamp}
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(url, headers=headers, params=params, timeout=90)
             response.raise_for_status()
 
-            new_checks = response.json()
-            new_attempts = new_checks['new_attempts']
+            query_result = response.json()
+            new_attempts = query_result['new_attempts']
             for attempt in new_attempts:
                 message = prepare_message(attempt)
                 bot.send_message(chat_id=telegram_chat_id, text=message)
 
-            timestamp = new_checks['last_attempt_timestamp']
+            timestamp = query_result['last_attempt_timestamp']
 
         except requests.exceptions.ReadTimeout:
-            print('Обновлений нет')
+            print('Ваши работы еще не проверены')
 
         except requests.exceptions.ConnectionError:
             print('Потеряно интернет соединение...')
