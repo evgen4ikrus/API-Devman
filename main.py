@@ -30,16 +30,16 @@ if __name__ == '__main__':
     }
     response = requests.get(url, headers=headers)
     response.raise_for_status()
-    query_result = response.json()
+    review_response = response.json()
 
-    if query_result['status'] == 'timeout':
-        timestamp = query_result['timestamp_to_request']
+    if review_response['status'] == 'timeout':
+        timestamp = review_response['timestamp_to_request']
     else:
-        new_attempts = query_result['new_attempts']
+        new_attempts = review_response['new_attempts']
         for attempt in new_attempts:
             message = prepare_message(attempt)
             bot.send_message(chat_id=telegram_chat_id, text=message)
-        timestamp = query_result['last_attempt_timestamp']
+        timestamp = review_response['last_attempt_timestamp']
 
     while True:
 
@@ -48,13 +48,13 @@ if __name__ == '__main__':
             response = requests.get(url, headers=headers, params=params, timeout=90)
             response.raise_for_status()
 
-            query_result = response.json()
-            new_attempts = query_result['new_attempts']
+            review_response = response.json()
+            new_attempts = review_response['new_attempts']
             for attempt in new_attempts:
                 message = prepare_message(attempt)
                 bot.send_message(chat_id=telegram_chat_id, text=message)
 
-            timestamp = query_result['last_attempt_timestamp']
+            timestamp = review_response['last_attempt_timestamp']
 
         except requests.exceptions.ReadTimeout:
             print('Ваши работы еще не проверены')
