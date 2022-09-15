@@ -17,7 +17,7 @@ def prepare_message(attempt):
     return message
 
 
-if __name__ == '__main__':
+def main():
 
     load_dotenv()
     devman_token = os.environ['DEVMAN_TOKEN']
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     }
 
     timestamp = time.time()
-    timeout = 5
+    timeout = 90
 
     while True:
 
@@ -58,3 +58,7 @@ if __name__ == '__main__':
         except requests.exceptions.ConnectionError:
             print('Потеряно интернет соединение...')
             sleep(10)
+
+
+if __name__ == '__main__':
+    main()
