@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 from time import sleep
 import telegram
+import time
 
 
 def prepare_message(attempt):
@@ -28,36 +29,31 @@ if __name__ == '__main__':
     headers = {
         'Authorization': f'Token {devman_token}'
     }
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()
-    review_response = response.json()
 
-    if review_response['status'] == 'timeout':
-        timestamp = review_response['timestamp_to_request']
-    else:
-        new_attempts = review_response['new_attempts']
-        for attempt in new_attempts:
-            message = prepare_message(attempt)
-            bot.send_message(chat_id=telegram_chat_id, text=message)
-        timestamp = review_response['last_attempt_timestamp']
+    timestamp = time.time()
+    timeout = 5
 
     while True:
 
         try:
             params = {'timestamp': timestamp}
-            response = requests.get(url, headers=headers, params=params, timeout=90)
+            response = requests.get(url, headers=headers, params=params, timeout=timeout)
             response.raise_for_status()
 
             review_response = response.json()
-            new_attempts = review_response['new_attempts']
-            for attempt in new_attempts:
-                message = prepare_message(attempt)
-                bot.send_message(chat_id=telegram_chat_id, text=message)
+            if review_response['status'] == 'timeout':
+                timestamp = review_response['timestamp_to_request']
+            else:
+                new_attempts = review_response['new_attempts']
+                for attempt in new_attempts:
+                    message = prepare_message(attempt)
+                    bot.send_message(chat_id=telegram_chat_id, text=message)
+                timestamp = review_response['last_attempt_timestamp']
 
             timestamp = review_response['last_attempt_timestamp']
 
         except requests.exceptions.ReadTimeout:
-            print('Ваши работы еще не проверены')
+            pass
 
         except requests.exceptions.ConnectionError:
             print('Потеряно интернет соединение...')
