@@ -1,9 +1,10 @@
-import requests
-from dotenv import load_dotenv
 import os
-from time import sleep
-import telegram
 import time
+from time import sleep
+
+import requests
+import telegram
+from dotenv import load_dotenv
 
 
 def prepare_message(attempt):
@@ -37,7 +38,8 @@ def main():
 
         try:
             params = {'timestamp': timestamp}
-            response = requests.get(url, headers=headers, params=params, timeout=timeout)
+            response = requests.get(url, headers=headers,
+                                    params=params, timeout=timeout)
             response.raise_for_status()
 
             review_response = response.json()
