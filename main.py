@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 from time import sleep
@@ -19,12 +20,14 @@ def prepare_message(attempt):
 
 
 def main():
+    logging.basicConfig(level=logging.INFO)
 
     load_dotenv()
     devman_token = os.environ['DEVMAN_TOKEN']
     telegram_token = os.environ['TELEGRAM_TOKEN']
     telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
     bot = telegram.Bot(token=telegram_token)
+    logging.info('Бот запущен')
 
     url = 'https://dvmn.org/api/long_polling/'
     headers = {
