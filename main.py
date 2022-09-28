@@ -8,6 +8,18 @@ import telegram
 from dotenv import load_dotenv
 
 
+class TelegramLogsHandler(logging.Handler):
+
+    def __init__(self, tg_bot, chat_id):
+        super().__init__()
+        self.chat_id = chat_id
+        self.tg_bot = tg_bot
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        self.tg_bot.send_message(chat_id=self.chat_id, text=log_entry)
+
+
 def prepare_message(attempt):
     lesson_title = attempt['lesson_title']
     if attempt['is_negative']:
@@ -27,7 +39,11 @@ def main():
     telegram_token = os.environ['TELEGRAM_TOKEN']
     telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
     bot = telegram.Bot(token=telegram_token)
-    logging.info('Бот запущен')
+
+    logger = logging.getLogger('Logger')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(TelegramLogsHandler(bot, telegram_chat_id))
+    logger.info('Бот запущен')
 
     url = 'https://dvmn.org/api/long_polling/'
     headers = {
@@ -56,11 +72,14 @@ def main():
                 timestamp = review_response['last_attempt_timestamp']
 
         except requests.exceptions.ReadTimeout:
-            logging.warning('Нет ответа от сервера')
+            logger.warning('Нет ответа от сервера')
 
         except requests.exceptions.ConnectionError:
-            logging.warning('Потеряно интернет соединение')
+            logger.warning('Потеряно интернет соединение')
             sleep(10)
+
+        except Exception as err:
+            logger.error(err, exc_info=True)
 
 
 if __name__ == '__main__':
