@@ -56,10 +56,10 @@ def main():
                 timestamp = review_response['last_attempt_timestamp']
 
         except requests.exceptions.ReadTimeout:
-            pass
+            logging.warning('Нет ответа от сервера')
 
         except requests.exceptions.ConnectionError:
-            print('Потеряно интернет соединение...')
+            logging.warning('Потеряно интернет соединение')
             sleep(10)
 
 
