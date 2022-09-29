@@ -80,8 +80,8 @@ def main():
             logger.warning('Потеряно интернет соединение')
             sleep(10)
 
-        except Exception as err:
-            logger.error(err, exc_info=True)
+        except Exception:
+            logger.exception('Произошла ошибка:')
 
 
 if __name__ == '__main__':
