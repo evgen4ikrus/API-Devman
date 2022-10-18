@@ -41,6 +41,7 @@ def main():
     devman_token = os.environ['DEVMAN_TOKEN']
     telegram_token = os.environ['TELEGRAM_TOKEN']
     telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
+    tg_chat_id = os.environ['TG_CHAT_ID']
     bot = telegram.Bot(token=telegram_token)
 
     logger.setLevel(logging.INFO)
@@ -70,7 +71,7 @@ def main():
                 new_attempts = review_response['new_attempts']
                 for attempt in new_attempts:
                     message = prepare_message(attempt)
-                    bot.send_message(chat_id=telegram_chat_id, text=message)
+                    bot.send_message(chat_id=tg_chat_id, text=message)
                 timestamp = review_response['last_attempt_timestamp']
 
         except requests.exceptions.ReadTimeout:

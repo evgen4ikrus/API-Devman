@@ -15,7 +15,8 @@ pip install -r requirements.txt
 ```
 DEVMAN_TOKEN=834d51br0116fb17c53afa3d950eaea4551066c1
 TELEGRAM_TOKEN=5516583653:AAERHDDNaolh-zc7tVr-UYTgMrg24BT8hPo
-TELEGRAM_CHAT_ID=@ivanovivan
+TELEGRAM_CHAT_ID=@ivanovivan  # для логов
+TG_CHAT_ID=1774521104  # для оповещений
 ```
 ## Запуск и работа
 Запустите скрипт командой:
